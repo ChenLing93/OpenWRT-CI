@@ -82,6 +82,7 @@ UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "gecoosac luci-app-timewo
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
 UPDATE_PACKAGE "luci-app-openclash" "vernesong/OpenClash" "dev" "pkg"
 UPDATE_PACKAGE "luci-app-ddnsto" "linkease/ddnsto-openwrt" "main" "pkg"
+UPDATE_PACKAGE "ddnsto" "linkease/ddnsto-openwrt" "main" "pkg"
 UPDATE_PACKAGE "luci-app-wechatpush" "tty228/luci-app-wechatpush" "master"
 
 
