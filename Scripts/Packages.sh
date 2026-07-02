@@ -83,7 +83,7 @@ UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "gecoosac luci-app-timewo
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
 UPDATE_PACKAGE "luci-app-ddnsto" "linkease/nas-packages" "master" "pkg"
 UPDATE_PACKAGE "luci-app-wechatpush" "tty228/luci-app-wechatpush" "master"
-UPDATE_PACKAGE "istore" "linkease/istore" "mian" "pkg"
+UPDATE_PACKAGE "istore" "linkease/istore" "main" "pkg"
 UPDATE_PACKAGE "quickstart" "linkease/nas-packages" "master" "pkg"
 
 
