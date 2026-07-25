@@ -29,4 +29,13 @@ git clone --depth=1 --single-branch --branch "main" "https://github.com/asvow/lu
 # UPDATE_PACKAGE "athena-led" "unraveloop/JDC-AX6600-Athena-LED-Controller" "main"
 git clone --depth=1 --single-branch --branch "main" "https://github.com/sirpdboy/luci-app-ddns-go.git" package/custom/luci-app-ddns-go
 git clone --depth=1 --single-branch --branch "main" "https://github.com/sbwml/luci-app-diskman.git" package/custom/luci-app-diskman
-git clone --depth=1 --single-branch --
+# 拉取 QModem (5G 模组管理)
+git clone --depth=1 https://github.com/ChenLing93/QModem.git package/custom/QModem
+
+# 拉取 DDNSTO (内网穿透)
+git clone --depth=1 https://github.com/linkease/ddnsto-openwrt.git package/custom/ddnsto-openwrt
+
+# 拉取 iStore (软件中心)
+git clone --depth=1 https://github.com/linkease/istore.git package/custom/istore
+
+git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/custom/luci-app-wechatpush
