@@ -29,5 +29,4 @@ git clone --depth=1 --single-branch --branch "main" "https://github.com/asvow/lu
 # UPDATE_PACKAGE "athena-led" "unraveloop/JDC-AX6600-Athena-LED-Controller" "main"
 git clone --depth=1 --single-branch --branch "main" "https://github.com/sirpdboy/luci-app-ddns-go.git" package/custom/luci-app-ddns-go
 git clone --depth=1 --single-branch --branch "main" "https://github.com/sbwml/luci-app-diskman.git" package/custom/luci-app-diskman
-git clone --depth=1 --single-branch --branch "main" "https://github.com/4IceG/luci-app-mini-diskmanager.git" package/custom/luci-app-mini-diskmanager
 git clone --depth=1 --single-branch --
