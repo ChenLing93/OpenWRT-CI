@@ -32,8 +32,11 @@ git clone --depth=1 --single-branch --branch "main" "https://github.com/sbwml/lu
 # 拉取 QModem (5G 模组管理)
 git clone --depth=1 https://github.com/ChenLing93/QModem.git package/custom/QModem
 
-# 拉取 DDNSTO (内网穿透)
-git clone --depth=1 https://github.com/linkease/ddnsto-openwrt.git package/custom/ddnsto-openwrt
+# 拉取 DDNSTO 核心程序
+git clone --depth=1 -b master https://github.com/linkease/nas-packages.git package/custom/nas-packages
+
+# 拉取 DDNSTO LuCI 界面
+git clone --depth=1 -b main https://github.com/linkease/nas-packages-luci.git package/custom/nas-packages-luci
 
 # 拉取 iStore (软件中心)
 git clone --depth=1 https://github.com/linkease/istore.git package/custom/istore
