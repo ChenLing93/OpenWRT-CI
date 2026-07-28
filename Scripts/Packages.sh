@@ -104,6 +104,27 @@ git clone --depth=1 https://github.com/VIKINGYFY/packages.git package/custom/vik
 
 git clone --depth=1 https://github.com/ChenLing93/luci-app-cupsd.git package/custom/luci-app-cupsd
 
+# ================== 强制修正 iStore 和 DDNSTO 目录结构 ==================
+echo " "
+echo "=== Fixing iStore and DDNSTO directory structure ==="
+
+# 修正 iStore
+if [ -d "package/custom/istore/luci-app-store" ]; then
+    mv package/custom/istore/luci-app-store package/custom/luci-app-store
+    rm -rf package/custom/istore
+    echo "iStore directory fixed!"
+fi
+
+# 修正 DDNSTO
+if [ -d "package/custom/nas-packages/ddnsto" ]; then
+    mv package/custom/nas-packages/ddnsto package/custom/ddnsto
+    mv package/custom/nas-packages-luci/luci-app-ddnsto package/custom/luci-app-ddnsto
+    rm -rf package/custom/nas-packages package/custom/nas-packages-luci
+    echo "DDNSTO directory fixed!"
+fi
+
+echo "=== Directory structure fix completed ==="
+
 # ================== 4. 引入私有扩展脚本 ==================
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
 	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
