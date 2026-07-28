@@ -32,6 +32,10 @@ CONFIG_PACKAGE_libusb-1.0=y
 # 中文字体支持 (防止打印乱码)
 CONFIG_PACKAGE_wqy-microhei=y
 
+CONFIG_PACKAGE_luci-app-netspeedtest=y
+CONFIG_PACKAGE_iperf3=y
+CONFIG_PACKAGE_ookla-speedtest=y
+
 #删除插件
 CONFIG_PACKAGE_luci-app-attendedsysupgrade=n
 CONFIG_PACKAGE_luci-app-wol=n
