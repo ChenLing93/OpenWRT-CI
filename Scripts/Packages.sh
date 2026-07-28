@@ -80,12 +80,21 @@ UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
 # 这些插件官方源里没有，直接 git clone 到 package/custom 目录
 mkdir -p package/custom
 
-# DDNSTO (内网穿透)
+# DDNSTO (内网穿透) - 修正目录结构
 git clone --depth=1 https://github.com/linkease/nas-packages.git package/custom/nas-packages
 git clone --depth=1 https://github.com/linkease/nas-packages-luci.git package/custom/nas-packages-luci
+# 将核心程序和 LuCI 界面移动到根目录，让编译系统能直接找到
+mv package/custom/nas-packages/ddnsto package/custom/ddnsto
+mv package/custom/nas-packages-luci/luci-app-ddnsto package/custom/luci-app-ddnsto
+# 删除空的父目录
+rm -rf package/custom/nas-packages package/custom/nas-packages-luci
 
-# iStore (软件中心)
+# iStore (软件中心) - 修正目录结构
 git clone --depth=1 https://github.com/linkease/istore.git package/custom/istore
+# 将 luci-app-store 移动到根目录
+mv package/custom/istore/luci-app-store package/custom/luci-app-store
+# 删除空的父目录
+rm -rf package/custom/istore
 
 # WeChatPush (微信推送)
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/custom/luci-app-wechatpush
