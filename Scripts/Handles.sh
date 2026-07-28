@@ -246,3 +246,14 @@ if [ -f "$RUST_FILE" ]; then
 		echo "rust fix failed; continuing!"
 	fi
 fi
+
+# 修复 WeChatPush 权限问题
+if [ -d "$PKG_PATH/luci-app-wechatpush" ]; then
+	echo " "
+	if chmod -R 755 "$PKG_PATH/luci-app-wechatpush/root/usr/share/wechatpush" && \
+	   chmod -R 755 "$PKG_PATH/luci-app-wechatpush/root/usr/lib/lua/luci/controller/wechatpush"; then
+		echo "wechatpush permissions have been fixed!"
+	else
+		echo "wechatpush permission fix failed; continuing!"
+	fi
+fi
