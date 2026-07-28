@@ -102,6 +102,8 @@ git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/cu
 # 集客软AC & Axonhub & Sing-box (Viking 仓库)
 git clone --depth=1 https://github.com/VIKINGYFY/packages.git package/custom/viking-packages
 
+git clone --depth=1 https://github.com/ChenLing93/luci-app-cupsd.git package/custom/luci-app-cupsd
+
 # ================== 4. 引入私有扩展脚本 ==================
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
 	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
