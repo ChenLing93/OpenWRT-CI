@@ -53,12 +53,12 @@ if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
 	echo "WRT_WIFI=wifi-no" >> $GITHUB_ENV
 fi
 
-# ================== 修复 luci-app-cupsd 索引与 ACL 缺失 ==================
+# ================== 修复 luci-app-cupsd (ACL + 中文汉化) ==================
 CUPSD_DIR="package/custom/luci-app-cupsd"
 if [ -d "$CUPSD_DIR" ]; then
-    echo "=== Fixing luci-app-cupsd ACL and Index ==="
+    echo "=== Fixing luci-app-cupsd ACL and Chinese Localization ==="
     
-    # 1. 强制创建 ACL 权限目录并写入权限文件
+    # --- 1. 修复 ACL 权限文件 ---
     mkdir -p "$CUPSD_DIR/root/usr/share/rpcd/acl.d"
     cat > "$CUPSD_DIR/root/usr/share/rpcd/acl.d/luci-app-cupsd.json" << 'EOF'
 {
@@ -74,19 +74,74 @@ if [ -d "$CUPSD_DIR" ]; then
 }
 EOF
 
-    # 2. 修复 Makefile 的安装逻辑（确保 ACL 文件被正确安装到固件中）
+    # --- 2. 内置中文汉化文件 ---
+    # 创建必要的目录结构
+    mkdir -p "$CUPSD_DIR/root/usr/share/cups/templates/zh_CN"
+    mkdir -p "$CUPSD_DIR/root/usr/share/cups/doc-root/zh_CN"
+    mkdir -p "$CUPSD_DIR/root/etc/cups"
+
+    # 创建中文首页文件 (index.html)
+    cat > "$CUPSD_DIR/root/usr/share/cups/doc-root/zh_CN/index.html" << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CUPS 管理界面</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>欢迎使用 CUPS 打印服务</h1>
+    <p>这是一个中文版的 CUPS 管理界面。</p>
+    <p>请通过顶部的导航栏进行管理。</p>
+</body>
+</html>
+EOF
+
+    # 创建中文模板文件 (header.tmpl)
+    cat > "$CUPSD_DIR/root/usr/share/cups/templates/zh_CN/header.tmpl" << 'EOF'
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>{@PAGE_TITLE@} - CUPS @CUPS_VERSION@</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="imagetoolbar" content="no">
+    <link rel="stylesheet" href="/help/help.css" type="text/css">
+</head>
+<body>
+<div id="header">
+    <h1>CUPS @CUPS_VERSION@</h1>
+</div>
+<div id="body">
+    <div id="navbar">
+        <ul>
+            <li><a href="/admin/">首页</a></li>
+            <li><a href="/admin/?OP=RESTART_SERVER">重启服务</a></li>
+            <li><a href="/admin/?OP=STOP_SERVER">停止服务</a></li>
+        </ul>
+    </div>
+    <div id="page">
+EOF
+
+    # --- 3. 修补 Makefile ---
     if [ -f "$CUPSD_DIR/Makefile" ]; then
-        # 检查 Makefile 里是否已经包含 acl 安装命令，如果没有则追加
-        if ! grep -q "acl.d" "$CUPSD_DIR/Makefile"; then
+        # 检查是否已经修补过，避免重复添加
+        if ! grep -q "acl.d" "$CUPSD_DIR/Makefile" || ! grep -q "templates/zh_CN" "$CUPSD_DIR/Makefile"; then
+            # 使用 sed 在 Package 定义后插入安装命令
             sed -i '/define Package\/luci-app-cupsd\/install/i \
-define Package/luci-app-cupsd/install/acl\
+define Package/luci-app-cupsd/install/extra\
 \t$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d\
 \t$(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/luci-app-cupsd.json $(1)/usr/share/rpcd/acl.d/\
+\t$(INSTALL_DIR) $(1)/usr/share/cups/templates/zh_CN\
+\t$(CP) ./root/usr/share/cups/templates/zh_CN/* $(1)/usr/share/cups/templates/zh_CN/\
+\t$(INSTALL_DIR) $(1)/usr/share/cups/doc-root/zh_CN\
+\t$(CP) ./root/usr/share/cups/doc-root/zh_CN/* $(1)/usr/share/cups/doc-root/zh_CN/\
+\t$(INSTALL_DIR) $(1)/etc/cups\
 endef\n' "$CUPSD_DIR/Makefile"
         fi
     fi
     
-    echo "luci-app-cupsd ACL and Index fix completed!"
+    echo "luci-app-cupsd ACL and Chinese Localization fix completed!"
 fi
 
 #高通平台调整
