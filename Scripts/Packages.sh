@@ -80,21 +80,34 @@ UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
 # 这些插件官方源里没有，直接 git clone 到 package/custom 目录
 mkdir -p package/custom
 
-# DDNSTO (内网穿透) - 修正目录结构
-git clone --depth=1 https://github.com/linkease/nas-packages.git package/custom/nas-packages
-git clone --depth=1 https://github.com/linkease/nas-packages-luci.git package/custom/nas-packages-luci
-# 将核心程序和 LuCI 界面移动到根目录，让编译系统能直接找到
-mv package/custom/nas-packages/ddnsto package/custom/ddnsto
-mv package/custom/nas-packages-luci/luci-app-ddnsto package/custom/luci-app-ddnsto
-# 删除空的父目录
-rm -rf package/custom/nas-packages package/custom/nas-packages-luci
+# ================== iStore (软件中心) ==================
+# 直接克隆 iStore 核心依赖和主程序
+git clone --depth=1 https://github.com/linkease/nas-packages-luci package/custom/nas-packages-luci
+git clone --depth=1 https://github.com/linkease/istore package/custom/istore
 
-# iStore (软件中心) - 修正目录结构
-git clone --depth=1 https://github.com/linkease/istore.git package/custom/istore
-# 将 luci-app-store 移动到根目录
-mv package/custom/istore/luci-app-store package/custom/luci-app-store
-# 删除空的父目录
-rm -rf package/custom/istore
+# 精准提取并移动 iStore 相关文件
+if [ -d "package/custom/istore/luci-app-store" ]; then
+    mv package/custom/istore/luci-app-store package/custom/luci-app-store
+fi
+if [ -d "package/custom/nas-packages-luci/luci-lib-taskd" ]; then
+    mv package/custom/nas-packages-luci/luci-lib-taskd package/custom/luci-lib-taskd
+fi
+# 清理不需要的残留目录
+rm -rf package/custom/istore package/custom/nas-packages-luci
+
+# ================== DDNSTO (内网穿透) ==================
+# 直接克隆 DDNSTO 的独立仓库
+git clone --depth=1 https://github.com/linkease/ddnsto-openwrt package/custom/ddnsto-openwrt
+
+# 精准提取并移动 DDNSTO 相关文件
+if [ -d "package/custom/ddnsto-openwrt/ddnsto" ]; then
+    mv package/custom/ddnsto-openwrt/ddnsto package/custom/ddnsto
+fi
+if [ -d "package/custom/ddnsto-openwrt/luci-app-ddnsto" ]; then
+    mv package/custom/ddnsto-openwrt/luci-app-ddnsto package/custom/luci-app-ddnsto
+fi
+# 清理残留目录
+rm -rf package/custom/ddnsto-openwrt
 
 # WeChatPush (微信推送)
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/custom/luci-app-wechatpush
@@ -104,26 +117,6 @@ git clone --depth=1 https://github.com/VIKINGYFY/packages.git package/custom/vik
 
 git clone --depth=1 https://github.com/ChenLing93/luci-app-cupsd.git package/custom/luci-app-cupsd
 
-# ================== 强制修正 iStore 和 DDNSTO 目录结构 ==================
-echo " "
-echo "=== Fixing iStore and DDNSTO directory structure ==="
-
-# 修正 iStore
-if [ -d "package/custom/istore/luci-app-store" ]; then
-    mv package/custom/istore/luci-app-store package/custom/luci-app-store
-    rm -rf package/custom/istore
-    echo "iStore directory fixed!"
-fi
-
-# 修正 DDNSTO
-if [ -d "package/custom/nas-packages/ddnsto" ]; then
-    mv package/custom/nas-packages/ddnsto package/custom/ddnsto
-    mv package/custom/nas-packages-luci/luci-app-ddnsto package/custom/luci-app-ddnsto
-    rm -rf package/custom/nas-packages package/custom/nas-packages-luci
-    echo "DDNSTO directory fixed!"
-fi
-
-echo "=== Directory structure fix completed ==="
 
 # ================== 4. 引入私有扩展脚本 ==================
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
