@@ -53,6 +53,42 @@ if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
 	echo "WRT_WIFI=wifi-no" >> $GITHUB_ENV
 fi
 
+# ================== 修复 luci-app-cupsd 索引与 ACL 缺失 ==================
+CUPSD_DIR="package/custom/luci-app-cupsd"
+if [ -d "$CUPSD_DIR" ]; then
+    echo "=== Fixing luci-app-cupsd ACL and Index ==="
+    
+    # 1. 强制创建 ACL 权限目录并写入权限文件
+    mkdir -p "$CUPSD_DIR/root/usr/share/rpcd/acl.d"
+    cat > "$CUPSD_DIR/root/usr/share/rpcd/acl.d/luci-app-cupsd.json" << 'EOF'
+{
+	"luci-app-cupsd": {
+		"description": "Grant UCI access for luci-app-cupsd",
+		"read": {
+			"uci": [ "cupsd" ]
+		},
+		"write": {
+			"uci": [ "cupsd" ]
+		}
+	}
+}
+EOF
+
+    # 2. 修复 Makefile 的安装逻辑（确保 ACL 文件被正确安装到固件中）
+    if [ -f "$CUPSD_DIR/Makefile" ]; then
+        # 检查 Makefile 里是否已经包含 acl 安装命令，如果没有则追加
+        if ! grep -q "acl.d" "$CUPSD_DIR/Makefile"; then
+            sed -i '/define Package\/luci-app-cupsd\/install/i \
+define Package/luci-app-cupsd/install/acl\
+\t$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d\
+\t$(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/luci-app-cupsd.json $(1)/usr/share/rpcd/acl.d/\
+endef\n' "$CUPSD_DIR/Makefile"
+        fi
+    fi
+    
+    echo "luci-app-cupsd ACL and Index fix completed!"
+fi
+
 #高通平台调整
 DTS_PATH="./target/linux/qualcommax/dts/"
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
