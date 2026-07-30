@@ -75,22 +75,14 @@ UPDATE_PACKAGE "qmodem" "FUjr/QModem" "main"
 UPDATE_PACKAGE "quickfile" "sbwml/luci-app-quickfile" "main"
 UPDATE_PACKAGE "timecontrol" "sirpdboy/luci-app-timecontrol" "main"
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
+UPDATE_PACKAGE "luci-app-store" "linkease/istore" "main"
 
 # ================== 3. 使用 git clone 拉取独立插件 ==================
 # 这些插件官方源里没有，直接 git clone 到 package/custom 目录
 mkdir -p package/custom
 
-# ================== iStore (软件中心) ==================
 git clone --depth=1 https://github.com/linkease/nas-packages-luci package/custom/nas-packages-luci
-git clone --depth=1 https://github.com/linkease/istore package/custom/istore
 
-# 精准提取并移动 iStore 相关文件
-if [ -d "package/custom/istore/luci-app-store" ]; then
-    mv package/custom/istore/luci-app-store package/custom/luci-app-store
-fi
-if [ -d "package/custom/nas-packages-luci/luci/luci-lib-taskd" ]; then
-    mv package/custom/nas-packages-luci/luci/luci-lib-taskd package/custom/luci-lib-taskd
-fi
 # 新增：提取 ddnsto 的 LuCI 界面
 if [ -d "package/custom/nas-packages-luci/luci/luci-app-ddnsto" ]; then
     mv package/custom/nas-packages-luci/luci/luci-app-ddnsto package/custom/luci-app-ddnsto
