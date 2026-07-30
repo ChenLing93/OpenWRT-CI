@@ -91,21 +91,22 @@ fi
 if [ -d "package/custom/nas-packages-luci/luci/luci-lib-taskd" ]; then
     mv package/custom/nas-packages-luci/luci/luci-lib-taskd package/custom/luci-lib-taskd
 fi
+# 新增：提取 ddnsto 的 LuCI 界面
+if [ -d "package/custom/nas-packages-luci/luci/luci-app-ddnsto" ]; then
+    mv package/custom/nas-packages-luci/luci/luci-app-ddnsto package/custom/luci-app-ddnsto
+fi
 # 清理不需要的残留目录
 rm -rf package/custom/istore package/custom/nas-packages-luci
-
 # ================== DDNSTO (内网穿透) ==================
 git clone --depth=1 https://github.com/linkease/nas-packages package/custom/nas-packages
 
-# 精准提取并移动 DDNSTO 相关文件
+# 精准提取并移动 DDNSTO 核心程序
 if [ -d "package/custom/nas-packages/network/services/ddnsto" ]; then
     mv package/custom/nas-packages/network/services/ddnsto package/custom/ddnsto
 fi
-if [ -d "package/custom/nas-packages/network/services/luci-app-ddnsto" ]; then
-    mv package/custom/nas-packages/network/services/luci-app-ddnsto package/custom/luci-app-ddnsto
-fi
 # 清理残留目录
 rm -rf package/custom/nas-packages
+
 
 # WeChatPush (微信推送)
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/custom/luci-app-wechatpush
