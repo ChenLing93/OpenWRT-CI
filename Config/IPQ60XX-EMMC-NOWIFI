@@ -1,0 +1,146 @@
+跳转到内容
+维京菲
+OpenWRT-CI
+存储库导航
+代码
+议题
+7
+ (7)
+拉取请求
+代理人
+行动
+安全性与质量
+见解
+变化比较
+选择两个分支查看更改内容或启动新的拉取请求。 如果需要，你也可以或者了解更多关于差异比较的内容。
+ 
+...
+ 
+能够合并。这些分支可以自动合并。
+@ChenLing93
+添加标题
+*
+Create IPQ60XX-EMMC-NOWIFI.txt
+
+添加描述
+评论
+ 
+请在这里添加你的描述......
+
+允许维护者编辑和访问秘密
+请记住，对本仓库的贡献应紧随其后 我们的GitHub社区准则。
+️
+有用资源
+GitHub社区指南
+ 1 提交
+ 1 个文件更改
+ 1位贡献者
+提交日期：2026年7月31日
+创造IPQ60XX-EMMC-NOWIFI.txt
+
+@ChenLing93
+ChenLing93 作者：现在日
+演出新增86次，删除0次。
+ 86次变动：86次新增，0次删除86 
+配置/IPQ60XX-EMMC-NOWIFI.txt
+原始文件行编号	原始文件行	差分线号	差速器线路更换
+@@ -0,0 +1,86@@
+#设备平台
+CONFIG_TARGET_qualcommax=y
+CONFIG_TARGET_qualcommax_ipq60xx=y
+
+#设备列表 专门针对自用EMMC机型
+CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_link_nn6000-v1=y
+CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_link_nn6000-v2=y
+CONFIG_TARGET_DEVICE_qualcommax_ipq60xx_DEVICE_redmi_ax5-JDcloud=y
+
+#WIFI驱动-关闭
+CONFIG_PACKAGE_kmod-ath=n
+CONFIG_PACKAGE_kmod-ath11k=n
+CONFIG_PACKAGE_kmod-ath11k-ahb=n
+CONFIG_PACKAGE_kmod-ath11k-pci=n
+CONFIG_PACKAGE_ath11k-firmware-ipq6018=n
+CONFIG_PACKAGE_ath11k-firmware-ipq6018-ddwrt=n
+CONFIG_PACKAGE_ath11k-firmware-qcn9074=n
+CONFIG_PACKAGE_ath11k-firmware-qcn9074-ddwrt=n
+
+# ================== 存储与文件系统 （eMMC 核心） ==================
+# eMMC 核心驱动
+CONFIG_PACKAGE_kmod-mmc=y
+CONFIG_PACKAGE_kmod-mmc-block=y
+# eMMC 文件系统 （推荐 ext4，适合容器频繁读写）
+CONFIG_PACKAGE_kmod-fs-ext4=y
+CONFIG_PACKAGE_e2fsprogs=y
+CONFIG_PACKAGE_block-mount=y
+# NTFS 文件系统支持
+CONFIG_PACKAGE_kmod-fs-ntfs3=y
+CONFIG_PACKAGE_ntfs-3g=y
+CONFIG_PACKAGE_kmod-nvme=y
+CONFIG_PACKAGE_kmod-ata-core=y
+CONFIG_PACKAGE_kmod-ata-ahci=y
+
+# ================== USB 3.0 支持==================
+# 保留 USB 核心与 USB 3.0 驱动，支持外接存储或 5G 模组
+CONFIG_PACKAGE_kmod-usb-core=y
+CONFIG_PACKAGE_kmod-usb3=y
+CONFIG_PACKAGE_kmod-usb-xhci=y
+CONFIG_PACKAGE_kmod-usb-storage=y
+CONFIG_PACKAGE_kmod-usb-storage-uas=y
+CONFIG_PACKAGE_usbutils=y
+CONFIG_PACKAGE_usb-modeswitch=y
+
+# ================== 容器支持 （Docker） ==================
+# 容器基础工具
+CONFIG_PACKAGE_dockerd=y
+CONFIG_PACKAGE_docker-compose=y
+CONFIG_PACKAGE_containerd=y
+CONFIG_PACKAGE_tini=y
+# 容器网络与存储驱动
+CONFIG_PACKAGE_kmod-veth=y
+CONFIG_PACKAGE_kmod-br-netfilter=y
+CONFIG_PACKAGE_kmod-nf-nat=y
+CONFIG_PACKAGE_kmod-ovl=y
+# 容器必须的 cgroups 支持
+CONFIG_PACKAGE_kmod-cgroup=y
+CONFIG_PACKAGE_kmod-cgroup-v1=y
+CONFIG_PACKAGE_kmod-cgroup-v2=y
+
+# ================== 高通 NSS 硬件加速与基础网络 ==================
+# 高通 NSS 硬件加速驱动
+CONFIG_PACKAGE_kmod-qca-nss-drv=y
+CONFIG_PACKAGE_kmod-qca-nss-ecm=y
+# 基础网络与防火墙
+CONFIG_PACKAGE_kmod-dsa=y
+CONFIG_PACKAGE_kmod-nft-core=y
+CONFIG_PACKAGE_kmod-nft-nat=y
+CONFIG_PACKAGE_kmod-nft-offload=y
+CONFIG_PACKAGE_kmod-tun=y
+CONFIG_PACKAGE_kmod-wireguard=y
+
+# ================== 5G 模组与移动网络支持 ==================
+# USB 串口与移动网络驱动 （支持 ECM/NCM 模式）
+CONFIG_PACKAGE_kmod-usb-serial=y
+CONFIG_PACKAGE_kmod-usb-serial-option=y
+CONFIG_PACKAGE_kmod-usb-serial-wwan=y
+CONFIG_PACKAGE_kmod-usb-net=y
+CONFIG_PACKAGE_kmod-USB-net-cdc-ncm=y
+CONFIG_PACKAGE_kmod-USB-net-cdc-mbim=y
+CONFIG_PACKAGE_kmod-usb-net-qmi-wwan=y
+CONFIG_PACKAGE_kmod-usb-net-rndis=y
+# 5G 拨号与模组管理工具
+CONFIG_PACKAGE_quectel-CM-5G=y
+CONFIG_PACKAGE_modemmanager=y
+CONFIG_PACKAGE_luci-proto-modemmanager=y
+页脚
+© 2026年GitHub公司
+页脚导航
+Terms
+Privacy
+Security
+Status
+Community
+Docs
+Contact
+管理 Cookie
+不要分享我的个人信息
+ 
