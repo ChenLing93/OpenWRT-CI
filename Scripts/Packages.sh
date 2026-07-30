@@ -97,6 +97,7 @@ if [ -d "package/custom/nas-packages-luci/luci/luci-app-ddnsto" ]; then
 fi
 # 清理不需要的残留目录
 rm -rf package/custom/istore package/custom/nas-packages-luci
+
 # ================== DDNSTO (内网穿透) ==================
 git clone --depth=1 https://github.com/linkease/nas-packages package/custom/nas-packages
 
@@ -107,15 +108,19 @@ fi
 # 清理残留目录
 rm -rf package/custom/nas-packages
 
-
 # WeChatPush (微信推送)
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/custom/luci-app-wechatpush
 
 # 集客软AC & Axonhub & Sing-box (Viking 仓库)
 git clone --depth=1 https://github.com/VIKINGYFY/packages.git package/custom/viking-packages
 
+# CUPS (打印服务) - 修复中文显示和服务控制
 git clone --depth=1 https://github.com/ChenLing93/luci-app-cupsd.git package/custom/luci-app-cupsd
-
+# 1. 修复中文显示：创建中文语言目录并链接英文翻译
+mkdir -p package/custom/luci-app-cupsd/po/zh_Hans
+ln -sf ../en/luci-app-cupsd.po package/custom/luci-app-cupsd/po/zh_Hans/luci-app-cupsd.po
+# 2. 修复服务无法控制：用修复后的脚本替换原文件
+wget -O package/custom/luci-app-cupsd/root/etc/init.d/cupsd https://raw.githubusercontent.com/sirpdboy/luci-app-cupsd/main/luci-app-cupsd/root/etc/init.d/cupsd
 
 # ================== 4. 引入私有扩展脚本 ==================
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
