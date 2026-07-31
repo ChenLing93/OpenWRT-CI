@@ -84,16 +84,5 @@ CONFIG_PACKAGE_kmod-usb-net-rndis=y
 CONFIG_PACKAGE_quectel-CM-5G=y
 CONFIG_PACKAGE_modemmanager=y
 CONFIG_PACKAGE_luci-proto-modemmanager=y
-页脚
-© 2026年GitHub公司
-页脚导航
-Terms
-Privacy
-Security
-Status
-Community
-Docs
-Contact
-管理 Cookie
-不要分享我的个人信息
+
  
