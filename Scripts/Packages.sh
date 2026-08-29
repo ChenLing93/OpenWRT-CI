@@ -2,36 +2,37 @@
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 VIKINGYFY
 
-#安装和更新软件包
+# ================== 1. 定义 UPDATE_PACKAGE 函数 ==================
 UPDATE_PACKAGE() {
 	local PKG_NAME=$1
 	local PKG_REPO=$2
 	local PKG_BRANCH=$3
 	local PKG_SPECIAL=$4
-	local PKG_LIST=("$PKG_NAME" $5)  # 第5个参数为自定义名称列表
+	local PKG_LIST=("$PKG_NAME" $5)
 	local REPO_NAME=${PKG_REPO#*/}
 
 	echo " "
 
 	# 删除本地可能存在的不同名称的软件包
 	for NAME in "${PKG_LIST[@]}"; do
-		# 查找匹配的目录
 		echo "Search directory: $NAME"
 		local FOUND_DIRS=$(find ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$NAME*" 2>/dev/null)
 
-		# 删除找到的目录
 		if [ -n "$FOUND_DIRS" ]; then
 			while read -r DIR; do
 				rm -rf "$DIR"
 				echo "Delete directory: $DIR"
 			done <<< "$FOUND_DIRS"
 		else
-			echo "Not fonud directory: $NAME"
+			echo "Not found directory: $NAME"
 		fi
 	done
 
-	# 克隆 GitHub 仓库
+	# 克隆 GitHub 仓库 (浅克隆)
 	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git"
+
+	# 彻底删除 .git 目录，释放 GitHub Actions 磁盘空间
+	rm -rf ./$REPO_NAME/.git
 
 	# 处理克隆的仓库
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
@@ -42,11 +43,8 @@ UPDATE_PACKAGE() {
 	fi
 }
 
-# 调用示例
-# UPDATE_PACKAGE "OpenAppFilter" "destan19/OpenAppFilter" "master" "" "custom_name1 custom_name2"
-# UPDATE_PACKAGE "open-app-filter" "destan19/OpenAppFilter" "master" "" "luci-app-appfilter oaf" 这样会把原有的open-app-filter，luci-app-appfilter，oaf相关组件删除，不会出现coremark错误。
-
-# UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
+# ================== 2. 使用 UPDATE_PACKAGE 替换/更新核心插件 ==================
+# 这些插件通常官方源里有旧版，或者名字冲突，需要用 UPDATE_PACKAGE 来替换
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
 UPDATE_PACKAGE "aurora" "eamonxg/luci-theme-aurora" "master"
 UPDATE_PACKAGE "aurora-config" "eamonxg/luci-app-aurora-config" "master"
@@ -64,10 +62,8 @@ UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 
 UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
 
-#UPDATE_PACKAGE "athena-led" "unraveloop/JDC-AX6600-Athena-LED-Controller" "main"
 UPDATE_PACKAGE "ddns-go" "sirpdboy/luci-app-ddns-go" "main"
 UPDATE_PACKAGE "diskman" "sbwml/luci-app-diskman" "main"
-UPDATE_PACKAGE "diskmanager" "4IceG/luci-app-mini-diskmanager" "main"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5" "" "v2dat"
 UPDATE_PACKAGE "netspeedtest" "sirpdboy/netspeedtest" "main" "" "homebox ookla-speedtest"
@@ -78,54 +74,47 @@ UPDATE_PACKAGE "qbittorrent" "sbwml/luci-app-qbittorrent" "master" "" "qt6base q
 UPDATE_PACKAGE "qmodem" "FUjr/QModem" "main"
 UPDATE_PACKAGE "quickfile" "sbwml/luci-app-quickfile" "main"
 UPDATE_PACKAGE "timecontrol" "sirpdboy/luci-app-timecontrol" "main"
-UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "axonhub gecoosac sing-box luci-app-homeproxy luci-app-timewol luci-app-wolplus luci-app-wolultra"
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
+UPDATE_PACKAGE "luci-app-store" "linkease/istore" "main"
 
-#更新软件包版本
-UPDATE_VERSION() {
-	local PKG_NAME=$1
-	local PKG_MARK=${2:-false}
-	local PKG_FILES=$(find ./ ../feeds/packages/ -maxdepth 3 -type f -wholename "*/$PKG_NAME/Makefile")
+# ================== 3. 使用 git clone 拉取独立插件 ==================
+# 这些插件官方源里没有，直接 git clone 到 package/custom 目录
+mkdir -p package/custom
 
-	if [ -z "$PKG_FILES" ]; then
-		echo "$PKG_NAME not found!"
-		return
-	fi
+git clone --depth=1 https://github.com/linkease/nas-packages-luci package/custom/nas-packages-luci
 
-	echo -e "\n$PKG_NAME version update has started!"
+# 新增：提取 ddnsto 的 LuCI 界面
+if [ -d "package/custom/nas-packages-luci/luci/luci-app-ddnsto" ]; then
+    mv package/custom/nas-packages-luci/luci/luci-app-ddnsto package/custom/luci-app-ddnsto
+fi
+# 清理不需要的残留目录
+rm -rf package/custom/istore package/custom/nas-packages-luci
 
-	for PKG_FILE in $PKG_FILES; do
-		local PKG_REPO=$(grep -Po "PKG_SOURCE_URL:=https://.*github.com/\K[^/]+/[^/]+(?=.*)" $PKG_FILE)
-		local PKG_TAG=$(curl -sL "https://api.github.com/repos/$PKG_REPO/releases" | jq -r "map(select(.prerelease == $PKG_MARK)) | first | .tag_name")
+# ================== DDNSTO (内网穿透) ==================
+git clone --depth=1 https://github.com/linkease/nas-packages package/custom/nas-packages
 
-		local OLD_VER=$(grep -Po "PKG_VERSION:=\K.*" "$PKG_FILE")
-		local OLD_URL=$(grep -Po "PKG_SOURCE_URL:=\K.*" "$PKG_FILE")
-		local OLD_FILE=$(grep -Po "PKG_SOURCE:=\K.*" "$PKG_FILE")
-		local OLD_HASH=$(grep -Po "PKG_HASH:=\K.*" "$PKG_FILE")
+# 精准提取并移动 DDNSTO 核心程序
+if [ -d "package/custom/nas-packages/network/services/ddnsto" ]; then
+    mv package/custom/nas-packages/network/services/ddnsto package/custom/ddnsto
+fi
+# 清理残留目录
+rm -rf package/custom/nas-packages
 
-		local PKG_URL=$([[ "$OLD_URL" == *"releases"* ]] && echo "${OLD_URL%/}/$OLD_FILE" || echo "${OLD_URL%/}")
+# WeChatPush (微信推送)
+git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git package/custom/luci-app-wechatpush
 
-		local NEW_VER=$(echo $PKG_TAG | sed -E 's/[^0-9]+/\./g; s/^\.|\.$//g')
-		local NEW_URL=$(echo $PKG_URL | sed "s/\$(PKG_VERSION)/$NEW_VER/g; s/\$(PKG_NAME)/$PKG_NAME/g")
-		local NEW_HASH=$(curl -sL "$NEW_URL" | sha256sum | cut -d ' ' -f 1)
+# 集客软AC & Axonhub & Sing-box (Viking 仓库)
+git clone --depth=1 https://github.com/VIKINGYFY/packages.git package/custom/viking-packages
 
-		echo "old version: $OLD_VER $OLD_HASH"
-		echo "new version: $NEW_VER $NEW_HASH"
+# CUPS (打印服务) - 修复中文显示和服务控制
+git clone --depth=1 https://github.com/ChenLing93/luci-app-cupsd.git package/custom/luci-app-cupsd
+# 1. 修复中文显示：创建中文语言目录并链接英文翻译
+mkdir -p package/custom/luci-app-cupsd/po/zh_Hans
+ln -sf ../en/luci-app-cupsd.po package/custom/luci-app-cupsd/po/zh_Hans/luci-app-cupsd.po
+# 2. 修复服务无法控制：用修复后的脚本替换原文件
+wget -O package/custom/luci-app-cupsd/root/etc/init.d/cupsd https://raw.githubusercontent.com/sirpdboy/luci-app-cupsd/main/luci-app-cupsd/root/etc/init.d/cupsd
 
-		if [[ "$NEW_VER" =~ ^[0-9].* ]] && dpkg --compare-versions "$OLD_VER" lt "$NEW_VER"; then
-			sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$NEW_VER/g" "$PKG_FILE"
-			sed -i "s/PKG_HASH:=.*/PKG_HASH:=$NEW_HASH/g" "$PKG_FILE"
-			echo "$PKG_FILE version has been updated!"
-		else
-			echo "$PKG_FILE version is already the latest!"
-		fi
-	done
-}
-
-#UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
-#UPDATE_VERSION "sing-box"
-
-#引入私有扩展脚本
+# ================== 4. 引入私有扩展脚本 ==================
 if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
 	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
 fi
