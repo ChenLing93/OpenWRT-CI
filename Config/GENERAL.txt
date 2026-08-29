@@ -3,11 +3,44 @@ CONFIG_PACKAGE_luci-app-homeproxy=y
 #增加插件
 CONFIG_PACKAGE_luci-app-autoreboot=y
 CONFIG_PACKAGE_luci-app-gecoosac=y
-CONFIG_PACKAGE_luci-app-mini-diskmanager=y
+CONFIG_PACKAGE_luci-app-diskman=y
 CONFIG_PACKAGE_luci-app-partexp=y
+CONFIG_PACKAGE_luci-app-ddns-go=y
 CONFIG_PACKAGE_luci-app-samba4=y
 CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_PACKAGE_luci-app-wolultra=y
+# ================== WeChatPush (微信推送) ==================
+CONFIG_PACKAGE_luci-app-wechatpush=y
+CONFIG_PACKAGE_luci-i18n-wechatpush-zh-cn=y
+
+
+# ================== DDNSTO (内网穿透) ==================
+CONFIG_PACKAGE_ddnsto=y
+CONFIG_PACKAGE_luci-app-ddnsto=y
+CONFIG_PACKAGE_luci-i18n-ddnsto-zh-cn=y
+
+# ================== iStore (软件中心) ==================
+CONFIG_PACKAGE_luci-app-store=y
+CONFIG_PACKAGE_luci-lib-taskd=y
+CONFIG_PACKAGE_taskd=y
+CONFIG_PACKAGE_lua-cjson=y
+CONFIG_PACKAGE_luci-lib-xterm=y
+CONFIG_PACKAGE_wget-ssl=y
+CONFIG_PACKAGE_coreutils=y
+CONFIG_PACKAGE_coreutils-nohup=y
+
+# ================== CUPS (打印服务) ==================
+CONFIG_PACKAGE_cups=y
+CONFIG_PACKAGE_luci-app-cupsd=y
+CONFIG_PACKAGE_kmod-usb-printer=y
+CONFIG_PACKAGE_libusb-1.0=y
+# 中文字体支持 (防止打印乱码)
+CONFIG_PACKAGE_wqy-microhei=y
+
+CONFIG_PACKAGE_python3-base=y
+CONFIG_PACKAGE_python3-pkg-resources=y
+CONFIG_PACKAGE_python3-email=y
+
 #删除插件
 CONFIG_PACKAGE_luci-app-attendedsysupgrade=n
 CONFIG_PACKAGE_luci-app-wol=n
@@ -15,6 +48,8 @@ CONFIG_PACKAGE_luci-app-wol=n
 CONFIG_CCACHE=y
 CONFIG_DEVEL=y
 CONFIG_FEED_video=n
+CONFIG_SIGN_EACH_PACKAGE=n
+CONFIG_SIGN_FIRMWARE=n
 CONFIG_TARGET_MULTI_PROFILE=y
 CONFIG_TARGET_PER_DEVICE_ROOTFS=y
 CONFIG_TARGET_ROOTFS_INITRAMFS=n
@@ -85,6 +120,7 @@ CONFIG_PACKAGE_automount=y
 CONFIG_PACKAGE_blkid=y
 CONFIG_PACKAGE_cfdisk=y
 CONFIG_PACKAGE_cgdisk=y
+CONFIG_PACKAGE_autocore=y
 CONFIG_PACKAGE_coremark=y
 CONFIG_PACKAGE_cpufreq=y
 CONFIG_PACKAGE_curl=y
@@ -114,6 +150,7 @@ CONFIG_PACKAGE_openssl-util=y
 CONFIG_PACKAGE_proto-bonding=y
 CONFIG_PACKAGE_sfdisk=y
 CONFIG_PACKAGE_sgdisk=y
+CONFIG_PACKAGE_coremark=y
 CONFIG_PACKAGE_smartmontools=y
 CONFIG_PACKAGE_smartmontools-drivedb=y
 CONFIG_PACKAGE_usb-modeswitch=y
